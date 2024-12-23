@@ -1,62 +1,74 @@
-{:deps {prismatic/schema           {:mvn/version "1.1.12"}
-        prismatic/plumbing         {:mvn/version "0.5.5"}
+{:deps {prismatic/schema           {:mvn/version "1.4.1"}
+        prismatic/plumbing         {:mvn/version "0.6.0"}
         ;; TODO replace with org.flatland/ordered
         ikitommi/linked            {:mvn/version "1.3.1-alpha1"}
-        metosin/muuntaja           {:mvn/version "0.6.6"}
-        ring/ring-core             {:mvn/version "1.8.0"}
-        compojure/compojure        {:mvn/version "1.6.1"}
-        metosin/spec-tools         {:mvn/version "0.10.6"}
-        metosin/ring-http-response {:mvn/version "0.9.1"}
-        metosin/ring-swagger-ui    {:mvn/version "3.24.3"}
-        metosin/ring-swagger       {:mvn/version "1.0.0"}
-        joda-time/joda-time        {:mvn/version "2.10.5"}
+        metosin/muuntaja           {:mvn/version "0.6.10"}
+        ring/ring-core             {:mvn/version "1.13.0"}
+        compojure/compojure        {:mvn/version "1.7.1"}
+        metosin/spec-tools         {:mvn/version "0.10.7"}
+        metosin/ring-http-response {:mvn/version "0.9.4"}
+        metosin/ring-swagger-ui    {:mvn/version "5.18.2"}
+        metosin/ring-swagger       {:mvn/version "1.0.0"
+                                    :exclusions  [com.fasterxml.jackson.dataformat/jackson-dataformat-cbor
+                                                  com.google.guava/guava]}
+        joda-time/joda-time        {:mvn/version "2.13.0"}
+        com.google.guava/guava     {:mvn/version "33.4.0-jre"}
 
-        com.fasterxml.jackson.datatype/jackson-datatype-joda {:mvn/version "2.10.1"}}
+
+        com.fasterxml.jackson.datatype/jackson-datatype-joda     {:mvn/version "2.18.2"}
+        com.fasterxml.jackson.dataformat/jackson-dataformat-cbor {:mvn/version "2.18.2"}}
+
 
  :aliases {:1.10 {:override-deps {org.clojure/clojure {:mvn/version "1.10.1"}}}
            :1.11 {:override-deps {org.clojure/clojure {:mvn/version "1.11.3"}}}
            :1.12 {:override-deps {org.clojure/clojure {:mvn/version "1.12.0"}}}
 
-           :dev {:extra-deps {org.clojure/clojure             {:mvn/version "1.12.0"}
-                              org.clojure/core.unify          {:mvn/version "0.6.0"}
-                              org.clojure/core.async          {:mvn/version "0.6.532"}
-                              peridot/peridot                 {:mvn/version "0.5.2"}
-                              com.stuartsierra/component      {:mvn/version "0.4.0"}
-                              expound/expound                 {:mvn/version "0.8.2"}
-                              metosin/jsonista                {:mvn/version "0.2.5"}
-                              reloaded.repl/reloaded.repl     {:mvn/version "0.2.4"}
-                              metosin/muuntaja-msgpack        {:mvn/version "0.6.6"}
-                              javax.servlet/javax.servlet-api {:mvn/version "4.0.1"}
-                              metosin/muuntaja-yaml           {:mvn/version "0.6.6"}
-                              http-kit/http-kit               {:mvn/version "2.3.0"}
-                              criterium/criterium             {:mvn/version "0.4.5"}}}
+           :dev {:extra-deps {org.clojure/clojure                {:mvn/version "1.12.0"}
+                              org.clojure/core.unify             {:mvn/version "0.7.0"}
+                              org.clojure/core.async             {:mvn/version "1.7.701"}
+                              peridot/peridot                    {:mvn/version "0.5.4"
+                                                                  :exclusions  [org.apache.httpcomponents/httpmime]}
+                              org.apache.httpcomponents/httpmime {:mvn/version "4.5.13"}
+                              com.stuartsierra/component         {:mvn/version "1.1.0"}
+                              expound/expound                    {:mvn/version "0.9.0"}
+                              metosin/jsonista                   {:mvn/version "0.3.13"}
+                              reloaded.repl/reloaded.repl        {:mvn/version "0.2.4"}
+                              metosin/muuntaja-msgpack           {:mvn/version "0.6.10"}
+                              javax.servlet/javax.servlet-api    {:mvn/version "4.0.1"}
+                              metosin/muuntaja-yaml              {:mvn/version "0.6.10"}
+                              http-kit/http-kit                  {:mvn/version "2.8.0"}
+                              criterium/criterium                {:mvn/version "0.4.6"}}}
            :run {:jvm-opts    ["-Dcompojure.api.meta.static-context-coach={:default :assert :verbose true}"]
                  :extra-paths ["examples/thingie/src" "examples/thingie/dev-src"]
                  :main-opts   ["-m" "examples.server"]}
 
            :perf    {:jvm-opts ["-server" "-Xmx4096m" "-Dclojure.compiler.direct-linking=true"]}
-           :logging {:extra-deps {org.clojure/tools.logging      {:mvn/version "0.5.0"}
-                                  org.slf4j/jcl-over-slf4j       {:mvn/version "1.7.30"}
-                                  org.slf4j/jul-to-slf4j         {:mvn/version "1.7.30"}
-                                  org.slf4j/log4j-over-slf4j     {:mvn/version "1.7.30"}
-                                  ch.qos.logback/logback-classic {:mvn/version "1.2.3" }}}
+           :logging {:extra-deps {org.clojure/tools.logging      {:mvn/version "1.3.0"}
+                                  org.slf4j/jcl-over-slf4j       {:mvn/version "2.0.16"}
+                                  org.slf4j/jul-to-slf4j         {:mvn/version "2.0.16"}
+                                  org.slf4j/log4j-over-slf4j     {:mvn/version "2.0.16"}
+                                  ch.qos.logback/logback-classic {:mvn/version "1.5.15" }}}
            :async   {:jvm-opts   ["-Dcompojure-api.test.async=true"]
                      :extra-deps {manifold/manifold {:mvn/version "0.1.8"
                                                      :exclusions  [org.clojure/tools.logging]}}}
 
            :test
            {:extra-deps  {lambdaisland/kaocha           {:mvn/version "1.91.1392"
-                                                         :exclusions [org.clojure/tools.logging]}
+                                                         :exclusions  [org.clojure/tools.logging]}
                           lambdaisland/kaocha-cloverage {:mvn/version "1.1.89"
-                                                         :exclusions [org.clojure/tools.logging]}
+                                                         :exclusions  [org.clojure/tools.logging]}
                           lambdaisland/kaocha-junit-xml {:mvn/version "1.17.101"}}
             :main-opts   ["-m" "kaocha.runner"]
             :extra-paths ["test" "test19"]}
 
-           :eastwood {:main-opts  ["-m" "eastwood.lint" {:source-paths ["src"]
-                                                         :add-linters  [:unused-namespaces]}]
-                      :extra-deps {jonase/eastwood {:mvn/version "1.4.3"
-                                                    :exclusions  [org.clojure/clojure]}}}
+           :eastwood   {:main-opts  ["-m" "eastwood.lint" {:source-paths ["src"]
+                                                           :add-linters  [:unused-namespaces]}]
+                        :extra-deps {jonase/eastwood {:mvn/version "1.4.3"
+                                                      :exclusions  [org.clojure/clojure]}}}
+           :clj-watson {:replace-deps
+                        {io.github.clj-holmes/clj-watson
+                         {:git/tag "v6.0.0" :git/sha "cb02879"}}
+                        :main-opts ["-m" "clj-watson.cli"]}
 
            :build {:extra-deps  {io.github.clojure/tools.build {:git/tag "v0.10.6" :git/sha "52cf7d6"}}
                    :extra-paths ["scripts"]
