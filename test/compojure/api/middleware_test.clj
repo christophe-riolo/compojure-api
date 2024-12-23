@@ -1,11 +1,14 @@
 (ns compojure.api.middleware-test
-  (:require [compojure.api.middleware :refer :all]
-            [compojure.api.exception :as ex]
-            [clojure.test :refer [deftest is testing]]
-            [ring.util.http-response :refer [ok]]
-            [ring.util.http-status :as status]
-            [ring.util.test])
-  (:import (java.io PrintStream ByteArrayOutputStream)))
+  (:require
+   [clojure.string :refer [split-lines]]
+   [clojure.string :as str]
+   [clojure.test :refer [deftest is testing]]
+   [compojure.api.exception :as ex]
+   [compojure.api.middleware :refer :all]
+   [ring.util.http-status :as status]
+   [ring.util.test])
+  (:import
+   (java.io ByteArrayOutputStream PrintStream)))
 
 (defmacro without-err
   "Evaluates exprs in a context in which *err* is bound to a fresh
@@ -52,22 +55,22 @@
 (deftest wrap-exceptions-test
   (with-out-str
     (without-err
-      (let [exception (RuntimeException. "kosh")
+      (let [exception       (RuntimeException. "kosh")
             exception-class (.getName (.getClass exception))
-            handler (-> (fn [_] (throw exception))
-                        (wrap-exceptions default-options))
-            async-handler (-> (fn [_ _ raise] (raise exception))
-                              (wrap-exceptions default-options))]
+            handler         (-> (fn [_] (throw exception))
+                                (wrap-exceptions default-options))
+            async-handler   (-> (fn [_ _ raise] (raise exception))
+                                (wrap-exceptions default-options))]
 
         (testing "converts exceptions into safe internal server errors"
           (is (= {:status status/internal-server-error
-                  :body {:class exception-class
-                         :type "unknown-exception"}}
+                  :body   {:class exception-class
+                           :type  "unknown-exception"}}
                  (-> (handler {})
                      (select-keys [:status :body]))))
           (is (= {:status status/internal-server-error
-                  :body {:class exception-class
-                         :type "unknown-exception"}}
+                  :body   {:class exception-class
+                           :type  "unknown-exception"}}
                  (-> (call-async async-handler {})
                      (select-keys [:status :body]))))))))
 
@@ -77,14 +80,19 @@
         (let [handler (-> (fn [_] (throw (ex-info "kosh" {:type ::test})))
                           (wrap-exceptions (assoc-in default-options [:handlers ::test] (fn [ex _ _] {:status 500 :body "hello"}))))]
           (is (= {:status status/internal-server-error
-                  :body "hello"}
+                  :body   "hello"}
                  (select-keys (handler {}) [:status :body])))))))
 
   (without-err
     (testing "Default handler logs exceptions to console"
       (let [handler (-> (fn [_] (throw (RuntimeException. "kosh")))
-                        (wrap-exceptions default-options))]
-        (is (= "ERROR kosh\n" (with-out-str (handler {})))))))
+                        (wrap-exceptions default-options))
+            out     (atom "")]
+        (with-redefs [compojure.api.impl.logging/log! (fn [level & more] (reset! out (str (.toUpperCase (name level))
+                                                                                          " "
+                                                                                          (str/join " " more))))]
+          (handler {})
+          (is (re-matches #".*ERROR .*kosh" @out))))))
 
   (without-err
     (testing "Default request-parsing handler does not log messages"
@@ -95,8 +103,13 @@
   (without-err
     (testing "Logging can be added to a exception handler"
       (let [handler (-> (fn [_] (throw (ex-info "Error parsing request" {:type ::ex/request-parsing} (RuntimeException. "Kosh"))))
-                        (wrap-exceptions (assoc-in default-options [:handlers ::ex/request-parsing] (ex/with-logging ex/request-parsing-handler :info))))]
-        (is (= "INFO Error parsing request\n" (with-out-str (handler {}))))))))
+                        (wrap-exceptions (assoc-in default-options [:handlers ::ex/request-parsing] (ex/with-logging ex/request-parsing-handler :info))))
+            out     (atom "")]
+        (with-redefs [compojure.api.impl.logging/log! (fn [level & more] (reset! out (str (.toUpperCase (name level))
+                                                                                          " "
+                                                                                          (str/join " " more))))]
+          (handler {})
+          (is (re-matches #".*INFO .*Error parsing request" @out)))))))
 
 (deftest issue-228-test ; "compose-middeleware strips nils aways. #228"
   (let [times2-mw (fn [handler]

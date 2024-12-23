@@ -8,11 +8,12 @@
 ;; use c.t.l logging if available, default to console logging
 (try
   (eval
-    `(do
-       (require 'clojure.tools.logging)
-       (defmacro ~'log! [& ~'args]
-         `(clojure.tools.logging/log ~@~'args))))
-  (catch Exception _
+   `(do
+      (require 'clojure.tools.logging)
+      (defn ~'log! [~'level ~'x & ~'more]
+        (clojure.tools.logging/log ~'level (str/join " " (cons ~'x ~'more)))))
+   )
+  (catch Exception e
     (let [log (fn [level more] (println (.toUpperCase (name level)) (str/join " " more)))]
       (defn log! [level x & more]
         (if (instance? Throwable x)
