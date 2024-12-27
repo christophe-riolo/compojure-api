@@ -1,1 +1,1 @@
-((nil (cider-clojure-cli-aliases . ":dev:logging:test:eastwood")))
+((nil (cider-clojure-cli-aliases . ":dev:logging:test")))

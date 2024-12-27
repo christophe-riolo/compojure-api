@@ -5,7 +5,7 @@
             [compojure.api.exception :as ex]
             [clojure.walk :as walk]
             [schema.utils :as su]
-            [linked.core :as linked]))
+            [flatland.ordered.map :refer [ordered-map]]))
 
 (defn memoized-coercer
   "Returns a memoized version of a referentially transparent coercer fn. The
@@ -14,7 +14,7 @@
   higher performance at the expense of higher memory use. FIFO with 10000 entries.
   Cache will be filled if anonymous coercers are used (does not match the cache)"
   []
-  (let [cache (atom (linked/map))
+  (let [cache (atom (ordered-map))
         cache-size 10000]
     (fn [& args]
       (or (@cache args)

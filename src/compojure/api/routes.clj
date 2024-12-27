@@ -1,27 +1,31 @@
 (ns compojure.api.routes
-  (:require [compojure.core :refer :all]
-            [clojure.string :as string]
-            [compojure.api.methods :as methods]
-            [compojure.api.request :as request]
-            [compojure.api.impl.logging :as logging]
-            [compojure.api.impl.json :as json]
-            [compojure.api.common :as common]
-            [muuntaja.core :as m]
-            [ring.swagger.common :as rsc]
-            [clojure.string :as str]
-            [linked.core :as linked]
-            [compojure.response]
-            [schema.core :as s]
-            [compojure.api.coercion :as coercion])
-  (:import (clojure.lang AFn IFn Var IDeref)
-           (java.io Writer)))
+  (:require
+    [clojure.string :as str]
+    [compojure.api.coercion :as coercion]
+    [compojure.api.common :as common]
+    [compojure.api.impl.json :as json]
+    [compojure.api.impl.logging :as logging]
+    [compojure.api.methods :as methods]
+    [compojure.api.request :as request]
+    [compojure.response]
+    [flatland.ordered.map :refer [ordered-map]]
+    [muuntaja.core :as m]
+    [ring.swagger.common :as rsc]
+    [schema.core :as s])
+  (:import
+   (clojure.lang
+    AFn
+    IDeref
+    IFn
+    Var)
+   (java.io Writer)))
 
 ;;
 ;; Route records
 ;;
 
 (defn- ->path [path]
-  (if-not (= path "/") path))
+  (when-not (= path "/") path))
 
 (defn- ->paths [p1 p2]
   (->path (str (->path p1) (->path p2))))
@@ -133,7 +137,7 @@
 
 (defn- string-path-parameters [uri]
   (let [params (path-params uri)]
-    (if (seq params)
+    (when (seq params)
       (zipmap params (repeat String)))))
 
 (defn- ensure-path-parameters [path info]
@@ -155,7 +159,7 @@
                  (ensure-path-parameters path public-info))))
            acc)
          acc))
-     (linked/map)
+     (ordered-map)
      routes)})
 
 ;;
@@ -174,7 +178,7 @@
                    (fn [old-info]
                      (let [public-info (or old-info public-info)]
                        (ensure-path-parameters path public-info))))))
-    (linked/map)
+    (ordered-map)
     routes))
 
 (defn route-lookup-table [routes]
@@ -184,14 +188,14 @@
                       :when x-name]
                   [x-name {path (merge
                                   {:method method}
-                                  (if params
+                                  (when params
                                     {:params params}))}])
         route-names (map first entries)
         duplicate-route-names (duplicates route-names)]
     (when (seq duplicate-route-names)
       (throw (ex-info
                (str "Found multiple routes with same name: "
-                    (string/join "," duplicate-route-names))
+                    (str/join "," duplicate-route-names))
                {:entries entries})))
     (into {} entries)))
 

@@ -1,5 +1,6 @@
 (ns compojure.api.common
-  (:require [linked.core :as linked]))
+  (:require
+    [flatland.ordered.map :refer [ordered-map]]))
 
 (defn plain-map?
   "checks whether input is a map, but not a record"
@@ -56,7 +57,7 @@
   memoized version of the function keeps a cache of the mapping from arguments
   to results and, when calls with the same arguments are repeated often, has
   higher performance at the expense of higher memory use. FIFO with size entries."
-  (let [cache (atom (linked/map))]
+  (let [cache (atom (ordered-map))]
     (fn [& xs]
       (or (@cache xs)
           (let [value (apply f xs)]
