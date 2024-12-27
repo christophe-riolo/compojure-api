@@ -1,11 +1,13 @@
 (ns compojure.api.main
-  (:require [clojure.string :as s])
+  (:require
+   [clojure.edn :as edn]
+   [clojure.string :as s])
   (:gen-class))
 
 (defn resolve-start-fn []
   (let [start (some-> "./project.clj"
                       slurp
-                      read-string
+                      edn/read-string
                       (->> (drop 1))
                       (->> (apply hash-map))
                       :start)

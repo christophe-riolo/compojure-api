@@ -70,6 +70,9 @@
                          {:git/tag "v6.0.0" :git/sha "cb02879"}}
                         :main-opts ["-m" "clj-watson.cli"]}
 
+           :clj-holmes {:deps {org.clojars.clj-holmes/clj-holmes {:mvn/version "1.4.0"}}
+                        :main-opts ["-m" "clj-holmes.main"]}
+
            :build {:extra-deps  {io.github.clojure/tools.build {:git/tag "v0.10.6" :git/sha "52cf7d6"}}
                    :extra-paths ["scripts"]
                    :ns-default  build}}}
